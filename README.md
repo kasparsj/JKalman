@@ -1,32 +1,13 @@
-# processing-library-template-gradle
+# JKalman Processing Library
 
-Processing library template using gradle.
+JKalman is a Kalman Filter library written by Petr Chmelar.
 
-## Development
+For the original source code see:
+https://sourceforge.net/projects/jkalman/
 
-### Download template
+## Installation
 
-```bash
-mkdir YOUR_LIBRARY_NAME
-cd YOUR_LIBRARY_NAME
-git clone https://github.com/endoh0509/processing-library-template-gradle.git .
-``` 
-
-### Edit settings.gradle
-
-```settings.gradle
-rootProject.name='YOUR_LIBRARY_NAME'
-```
-
-### Edit build.gradle
-
-```build.gradle
-group 'YOUR_LIBRARY_NAME'
-```
-
-### Write library source code
-
-Edit `src/main/java/*`
+Copy this directory into `processing/libraries`
 
 ## Build
 
@@ -39,10 +20,6 @@ gradle -q
 ```bash
 gradle javadoc
 ```
-
-## Installation
-
-Copy this directory into `processing/libraries`
 
 ## License
 
