@@ -23,4 +23,4 @@ gradle javadoc
 
 ## License
 
-MIT License
+GNU General Public License version 2.0 (GPLv2), Intel Open Source License
