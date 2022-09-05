@@ -1,0 +1,37 @@
+group 'JKalman'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+
+defaultTasks 'clean', 'build'
+
+sourceCompatibility = 1.8
+
+rootProject.version=''
+buildDir='library'
+libsDirName='./'
+docsDirName='../reference'
+
+javadoc {
+    options.charSet = 'UTF-8'
+    options.encoding = 'UTF-8'
+}
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    provided
+}
+
+sourceSets {
+    main {
+        compileClasspath += configurations.provided
+    }
+}
+
+dependencies {
+    provided group: 'org.processing', name: 'core', version: '3.3.7'
+    testImplementation group: 'junit', name: 'junit', version: '4.12'
+}
