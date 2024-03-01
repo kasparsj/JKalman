@@ -4,11 +4,11 @@ import jkalman.JKalman;
 import java.util.Random;
 
 JKalman kalman;
-Matrix m; // measurement [x, y]
+Matrix measurement;
 
 // init
-Matrix s = new Matrix(4, 1); // state [x, y, dx, dy, dxy]        
-Matrix c = new Matrix(4, 1); // corrected state [x, y, dx, dy, dxy]
+Matrix predicted_state = new Matrix(4, 1);        
+Matrix corrected_state = new Matrix(4, 1);
 
 Random rand;
 double x = 0;
@@ -17,10 +17,10 @@ double dx, dy;
 
 final int HISTORY = 500;
 int cursor = 0;
-Float[] m_x = new Float[HISTORY];
-Float[] m_y = new Float[HISTORY];
-Float[] c_x = new Float[HISTORY];
-Float[] c_y = new Float[HISTORY];
+Float[] measured_x = new Float[HISTORY];
+Float[] measured_y = new Float[HISTORY];
+Float[] filtered_x = new Float[HISTORY];
+Float[] filtered_y = new Float[HISTORY];
 
 void setup() {
   size(960, 480);
@@ -33,9 +33,9 @@ void setup() {
     dx = rand.nextDouble();
     dy = rand.nextDouble();
     
-    m = new Matrix(2, 1); // measurement [x]
-    m.set(0, 0, x);
-    m.set(1, 0, y);
+    measurement = new Matrix(2, 1); // measurement [x]
+    measurement.set(0, 0, x);
+    measurement.set(1, 0, y);
 
     // transitions for x, y, dx, dy
     double[][] tr = { {1, 0, 1, 0}, 
@@ -63,55 +63,54 @@ void draw() {
   background(0);
   
   // check state before
-  s = kalman.Predict();
+  predicted_state = kalman.Predict();
   
   // function init :)
-   m.set(0, 0, rand.nextDouble());
-   m.set(1, 0, rand.nextDouble());
+  measurement.set(0, 0, rand.nextDouble());
+  measurement.set(1, 0, rand.nextDouble());
   //x = rand.nextGaussian();
   //y = rand.nextGaussian();
 
-  //m.set(0, 0, m.get(0, 0) + dx + rand.nextGaussian());
-  //m.set(1, 0, m.get(1, 0) + dy + rand.nextGaussian());                
-
-  // a missing value (more then 1/4 times)
-  if (rand.nextGaussian() < -0.8) { 
-      //System.out.println(";;;;" + s.get(0, 0) + ";" + s.get(1, 0) + ";" + s.get(2, 0) + ";" + s.get(3, 0) + ";");
-  }
-  else { // measurement is ok :)
-      // look better
-      c = kalman.Correct(m);
+  //measurement.set(0, 0, measurement.get(0, 0) + dx + rand.nextGaussian());
+  //measurement.set(1, 0, measurement.get(1, 0) + dy + rand.nextGaussian());
   
-      m_x[cursor] = (float) m.get(0, 0);
-      m_y[cursor] = (float) m.get(1, 0);
-      
-      c_x[cursor] = (float) c.get(0, 0);
-      c_y[cursor] = (float) c.get(1, 0);
-      
-      pushMatrix();
-      pushStyle();
-      noFill();
-      stroke(255, 0, 0);
-      plot(m_x, width, height/2, cursor);
-      stroke(0, 255, 0);
-      plot(m_y, width, height/2, cursor);
-      popMatrix();
-      
-      pushMatrix();
-      translate(0, height/2);
-      stroke(255, 0, 0);
-      plot(c_x, width, height/2, cursor);
-      stroke(0, 255, 0);
-      plot(c_y, width, height/2, cursor);
-      popStyle();
-      popMatrix();
-      
-      cursor = (cursor + 1) % HISTORY;
-      
-      //System.out.println(m.get(0, 0) + ";" + m.get(1, 0) + ";" + x + ";" + y + ";"
-      //         + s.get(0, 0) + ";" + s.get(1, 0) + ";" + s.get(2, 0) + ";" + s.get(3, 0) + ";"
-      //         + c.get(0, 0) + ";" + c.get(1, 0) + ";" + c.get(2, 0) + ";" + c.get(3, 0) + ";");
+  measured_x[cursor] = (float) measurement.get(0, 0);
+  measured_y[cursor] = (float) measurement.get(1, 0);
+  
+  drawValue(cursor, measured_x, measured_y);
+
+  // simulate a missing value (more then 1/4 times)
+  if (rand.nextGaussian() < -0.8) { 
+      // use prediction in this case
+      filtered_x[cursor] = (float) predicted_state.get(0, 0);
+      filtered_y[cursor] = (float) predicted_state.get(1, 0);
   }
+  else { 
+      // measurement is ok :)
+      corrected_state = kalman.Correct(measurement);
+
+      // use corrected_state
+      filtered_x[cursor] = (float) corrected_state.get(0, 0);
+      filtered_y[cursor] = (float) corrected_state.get(1, 0);
+      
+  }
+  
+  pushMatrix();
+  translate(0, height/2);
+  drawValue(cursor, filtered_x, filtered_y);
+  popMatrix();
+  
+  cursor = (cursor + 1) % HISTORY;
+}
+
+<T>void drawValue(int cursor, T[] x, T[] y) {  
+    pushStyle();
+    noFill();
+    stroke(255, 0, 0);
+    plot(x, width, height/2, cursor);
+    stroke(0, 255, 0);
+    plot(y, width, height/2, cursor);
+    popStyle();
 }
 
 <T>void plot(T[] hist, float w, float h, int k) {
