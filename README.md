@@ -40,7 +40,7 @@ for (double measurementVal : noisyMeasurements) {
 }
 ```
 
-For x,y 2-dimensional example see: [examples/Test.pde](https://github.com/kasparsj/JKalman/blob/main/examples/Test/Test.pde)
+For 2-dimensional (x,y) example see: [examples/Test.pde](https://github.com/kasparsj/JKalman/blob/main/examples/Test/Test.pde)
 
 ## Build
 
