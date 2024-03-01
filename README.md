@@ -11,7 +11,7 @@ Copy this directory into `processing/libraries`
 
 ## Usage
 
-```
+```java
 // 1-dimensional example
 JKalman kalman = new JKalman(2, 1);
 
