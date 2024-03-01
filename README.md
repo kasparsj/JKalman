@@ -9,6 +9,10 @@ https://sourceforge.net/projects/jkalman/
 
 Copy this directory into `processing/libraries`
 
+## Usage
+
+See [examples/Test.pde](https://github.com/kasparsj/JKalman/blob/main/examples/Test/Test.pde)
+
 ## Build
 
 ```bash
